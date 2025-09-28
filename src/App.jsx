@@ -546,7 +546,7 @@ function App() {
         </section>
       ) : (
         <section className="login">
-          <h1>Please log in</h1>
+          <h1>Iniciar Sesión</h1>
           <form className="login-form" onSubmit={onSubmitHandler}>
             <label htmlFor="email">Correo:</label>
             <input type="email" name="email" required />
