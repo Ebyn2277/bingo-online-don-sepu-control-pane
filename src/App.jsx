@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import "./App.css";
 
-const endpoint = "https://chem-mothers-colon-renew.trycloudflare.com/api/";
+const endpoint = import.meta.env.VITE_API_URL;
 const header = {
   "Content-Type": "application/json",
   Accept: "application/json",
