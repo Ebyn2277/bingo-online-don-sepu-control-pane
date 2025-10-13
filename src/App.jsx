@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import "./App.css";
 
 const endpoint = import.meta.env.VITE_API_URL;
+const bingoId = import.meta.env.VITE_BINGO_ID;
 const header = {
   "Content-Type": "application/json",
   Accept: "application/json",
@@ -80,13 +81,16 @@ const fetchUpdateBingoInfo = async (token, bingoData) => {
 
 const fetchCurrentLines = async (token) => {
   try {
-    const res = await fetch(endpoint + "lines/current/admin", {
-      method: "GET",
-      headers: {
-        ...header,
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await fetch(
+      endpoint + "lines/current/admin?bingo_id=" + bingoId,
+      {
+        method: "GET",
+        headers: {
+          ...header,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     const data = await res.json();
     console.log(data);
     return data;
@@ -96,7 +100,14 @@ const fetchCurrentLines = async (token) => {
   }
 };
 
-const fetchUpdateLineState = async (lineId, userId, newState, token) => {
+const fetchUpdateLineState = async (
+  lineId,
+  userId,
+  column,
+  bingoId,
+  newState,
+  token
+) => {
   try {
     const response = await fetch(endpoint + `lines/update`, {
       method: "POST",
@@ -108,6 +119,8 @@ const fetchUpdateLineState = async (lineId, userId, newState, token) => {
         state: newState,
         line_id: lineId,
         user_id: userId,
+        column: column,
+        bingo_id: bingoId,
       }),
     });
     console.log("Update line state response:", response);
@@ -118,7 +131,13 @@ const fetchUpdateLineState = async (lineId, userId, newState, token) => {
   }
 };
 
-const fetchCancelLinePurchase = async (lineId, userId, token) => {
+const fetchCancelLinePurchase = async (
+  lineId,
+  userId,
+  column,
+  bingoId,
+  token
+) => {
   try {
     const response = await fetch(endpoint + `lines`, {
       method: "DELETE",
@@ -126,7 +145,12 @@ const fetchCancelLinePurchase = async (lineId, userId, token) => {
         ...header,
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ user_id: userId, line_id: lineId }),
+      body: JSON.stringify({
+        user_id: userId,
+        line_id: lineId,
+        column: column,
+        bingo_id: bingoId,
+      }),
     });
     console.log("Cancel line purchase response:", response);
     return response;
@@ -304,12 +328,20 @@ function App() {
     }
   }, [isLoggedIn]);
 
+  useEffect(() => console.log(lines), [lines]);
+
   const onClickChangeStateHandler = (newState) => {
     if (selectedLine && newState) {
       const token = localStorage.getItem("token");
       if (newState === "available") {
         // Si la nueva estado es "available", cancelar la compra
-        fetchCancelLinePurchase(selectedLine, selectedUser, token)
+        fetchCancelLinePurchase(
+          selectedLine.lineId,
+          selectedUser,
+          selectedLine.column,
+          bingoId,
+          token
+        )
           .then((response) => {
             if (!response.ok) {
               throw new Error("Network response was not ok");
@@ -338,36 +370,32 @@ function App() {
       }
 
       // Para otros estados, simplemente actualizar el estado de la línea
-      fetchUpdateLineState(selectedLine, selectedUser, newState, token)
+      fetchUpdateLineState(
+        selectedLine.lineId,
+        selectedUser,
+        selectedLine.column,
+        bingoId,
+        newState,
+        token
+      )
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
           // Actualizar el estado local de las líneas después de cambiar el estado
-          setLines((prevLines) =>
-            prevLines.map((line) =>
-              line.id === selectedLine
-                ? {
-                    ...line,
-                    users: line.users.map((user) => {
-                      if (user.id === selectedUser) {
-                        console.log(
-                          "Updating user state locally:",
-                          user,
-                          newState,
-                          selectedUser
-                        );
-                        return {
-                          ...user,
-                          pivot: { ...user.pivot, state: newState },
-                        };
-                      }
-                      return user;
-                    }),
-                  }
-                : line
-            )
-          );
+          fetchCurrentLines(token)
+            .then((data) => {
+              if (data) {
+                setLines(data);
+              } else {
+                setLines([]);
+              }
+            })
+            .catch((error) => {
+              alert("An error occurred while fetching current lines.");
+              console.error("Fetch current lines error:", error);
+            });
+
           setSelectedLine(null); // Cerrar el modal después de la actualización
         })
         .catch((error) => {
@@ -450,9 +478,7 @@ function App() {
             {totalLines &&
               Array.from({ length: totalLines }).map((_, i) => {
                 // Get all purchases for this line
-                const line = lines.filter((line) => line.id === i + 1)[0];
-
-                const users = line ? line.users : [];
+                const line = lines.filter((line) => line.line_id === i + 1);
 
                 return (
                   <li key={i}>
@@ -461,16 +487,19 @@ function App() {
                       {Array.from({
                         length: maxPurchasesPerLine,
                       }).map((_, j) => {
-                        if (j < users.length) {
+                        if (j < line.length) {
                           return (
-                            <li key={j} className={users[j].pivot.state}>
+                            <li key={j} className={line[j].state}>
                               <button
                                 onClick={() => {
-                                  setSelectedLine(i + 1);
-                                  setSelectedUser(users[j].id);
+                                  setSelectedLine({
+                                    lineId: i + 1,
+                                    column: line[j].column,
+                                  });
+                                  setSelectedUser(line[j].user.id);
                                 }}
                               >
-                                {users[j].name}
+                                {line[j].user.name}
                               </button>
                             </li>
                           );
@@ -479,12 +508,17 @@ function App() {
                           return (
                             <li key={j} className="available">
                               <button
+                              /**
                                 onClick={() => {
-                                  setSelectedLine(i + 1);
+                                  setSelectedLine({
+                                    lineId: i + 1,
+                                    column: line[j]?.column,
+                                  });
                                   setSelectedUser(
-                                    users[j] ? users[j].id : null
+                                    line[j]?.user ? line[j].user.id : null
                                   );
                                 }}
+                              */
                               >
                                 Disponible
                               </button>
@@ -503,11 +537,9 @@ function App() {
                 &times;
               </span>
               <p>
-                Has seleccionado la línea {selectedLine} y al usuario{" "}
-                {lines
-                  .find((line) => line.id == selectedLine)
-                  ?.users.find((user) => user.id == selectedUser)?.name ??
-                  "null"}
+                Has seleccionado la línea {selectedLine.lineId} y al usuario{" "}
+                {lines.find((line) => line.line_id === selectedLine.lineId)
+                  ?.user?.name ?? "null"}
                 .
               </p>
               <ul>
