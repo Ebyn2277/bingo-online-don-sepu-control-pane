@@ -314,20 +314,20 @@ function App() {
             if (!response.ok) {
               throw new Error("Network response was not ok");
             }
-            // Actualizar el estado local de las líneas después de cancelar la compra
-            setLines((prevLines) =>
-              prevLines.map((line) =>
-                line.id === selectedLine
-                  ? {
-                      ...line,
-                      state: "available",
-                      users: line.users.filter(
-                        (user) => user.id != selectedUser
-                      ),
-                    }
-                  : line
-              )
-            );
+
+            fetchCurrentLines(token)
+              .then((data) => {
+                if (data) {
+                  setLines(data);
+                } else {
+                  setLines([]);
+                }
+              })
+              .catch((error) => {
+                alert("An error occurred while fetching current lines.");
+                console.error("Fetch current lines error:", error);
+              });
+
             setSelectedLine(null); // Cerrar el modal después de la actualización
           })
           .catch((error) => {
