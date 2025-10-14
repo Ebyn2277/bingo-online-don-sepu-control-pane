@@ -1,5 +1,5 @@
 const endpoint = import.meta.env.VITE_API_URL;
-const bingoId = import.meta.env.VITE_BINGO_ID;
+const BINGO_ID = import.meta.env.VITE_BINGO_ID;
 
 const headers = {
   "Content-Type": "application/json",
@@ -68,34 +68,40 @@ export const bingoService = {
 
 export const linesService = {
   getCurrent: async (token) => {
-    return apiFetch("lines/current/admin?bingo_id=" + bingoId, {
+    return apiFetch("lines/current/admin?bingo_id=" + BINGO_ID, {
       method: "GET",
       headers: getAuthHeaders(token),
     });
   },
 
-  updateState: async (token, { lineId, userId, column, bingoId, state }) => {
+  updateState: async (
+    token,
+    { lineId, userId, column, state, bingoId = BINGO_ID }
+  ) => {
     return apiFetch("lines/update", {
       method: "POST",
       headers: getAuthHeaders(token),
       body: JSON.stringify({
         line_id: lineId,
         user_id: userId,
-        column: column,
+        column,
         bingo_id: bingoId,
-        state: state,
+        state,
       }),
     });
   },
 
-  cancelPurchase: async (token, { lineId, userId, column, bingoId }) => {
+  cancelPurchase: async (
+    token,
+    { lineId, userId, column, bingoId = BINGO_ID }
+  ) => {
     return apiFetch("lines", {
       method: "DELETE",
       headers: getAuthHeaders(token),
       body: JSON.stringify({
         line_id: lineId,
         user_id: userId,
-        column: column,
+        column,
         bingo_id: bingoId,
       }),
     });

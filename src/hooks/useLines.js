@@ -35,7 +35,7 @@ export const useLines = (isLoggedIn, token) => {
         lineId,
         userId,
         column,
-        newState,
+        state: newState,
       });
 
       if (!response.ok) {
