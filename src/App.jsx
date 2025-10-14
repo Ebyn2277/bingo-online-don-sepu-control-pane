@@ -75,18 +75,18 @@ function App() {
     }
   };
 
-  const onClickChangeStateHandler = (newState) => {
+  const onClickChangeStateHandler = async (newState) => {
     if (!selectedLine || !newState) return;
 
     let result;
     if (newState === "available") {
-      result = cancelLinePurchase(
+      result = await cancelLinePurchase(
         selectedLine.lineId,
         selectedUser,
         selectedLine.column
       );
     } else {
-      result = updateLineState(
+      result = await updateLineState(
         selectedLine.lineId,
         selectedUser,
         selectedLine.column,
