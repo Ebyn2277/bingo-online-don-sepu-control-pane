@@ -22,7 +22,7 @@ button {
 body {
   padding: 4rem 1rem;
   text-align: center;
-  background: url("assets/background.png") repeat;
+  background: url("assets/background.png");
 }
 
 button,
@@ -100,7 +100,6 @@ h2 {
 
 .screenshot-container {
   max-height: 80vh;
-  padding: 1rem 0;
 
   overflow: auto;
 
@@ -109,6 +108,8 @@ h2 {
   border-radius: 8px;
 
   h3 {
+    padding-block: 1rem;
+
     letter-spacing: 1px;
     text-decoration: underline;
   }
@@ -117,18 +118,18 @@ h2 {
 .lines {
   width: 100%;
 
-  padding: 1rem;
-
-  overflow: hidden;
   list-style: none;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
 
-  li {
+  background: url("/src/assets/background.png");
+
+  > li {
     width: 100%;
     height: 100%;
+
+    padding: 0.6rem 0;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -146,32 +147,68 @@ h2 {
   height: 100%;
   list-style: none;
   display: flex;
-  gap: 0.5rem;
-  justify-content: center;
+  flex-wrap: wrap;
+  justify-content: start;
+  gap: 0.4rem;
 
   li {
-    width: 100%;
-    height: 100%;
+    flex-basis: 6rem;
+    flex-shrink: 1;
+    flex-grow: 1;
     font-size: 0.85rem;
   }
 
   button {
     width: 100%;
-    height: 100%;
     border: none;
     cursor: pointer;
+    padding: 1rem 0.2rem;
+    box-shadow: 0 0 10px #0006;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .requested button {
     background-color: #f0ad4e;
     color: #222;
-    cursor: not-allowed;
   }
 
   .purchased button {
     background-color: #5cb85c;
     color: #222;
-    cursor: not-allowed;
+  }
+
+  .selected {
+    outline: 3px solid #00f;
+    border-radius: 8px;
+  }
+}
+
+.confirm-state-change-button-container {
+  width: calc(100% - 2rem + 6px);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 1rem;
+  padding: 6px;
+  border-radius: 14px;
+
+  background: url("/src/assets/background.png");
+}
+
+.confirm-state-change-button {
+  width: 100%;
+  background-color: #0aa;
+  color: #222;
+
+  outline: none;
+  border: none;
+
+  &:hover {
+    background-color: #099;
   }
 }
 
@@ -301,4 +338,13 @@ h2 {
     cursor: pointer;
     font-weight: bold;
   }
+}
+
+.lines-restart-button,
+.logout-button {
+  width: 100%;
+}
+
+.lines-restart-button {
+  background-color: #a33;
 }

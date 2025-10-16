@@ -29,14 +29,9 @@ export const useLines = (isLoggedIn, token) => {
     }
   }, [isLoggedIn, token]);
 
-  const updateLineState = async (lineId, userId, column, newState) => {
+  const updateLineState = async (purchases) => {
     try {
-      const response = await linesService.updateState(token, {
-        lineId,
-        userId,
-        column,
-        state: newState,
-      });
+      const response = await linesService.updateState(token, purchases);
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -50,13 +45,9 @@ export const useLines = (isLoggedIn, token) => {
     }
   };
 
-  const cancelLinePurchase = async (lineId, userId, column) => {
+  const cancelLinePurchase = async (purchaseIds) => {
     try {
-      const response = await linesService.cancelPurchase(token, {
-        lineId,
-        userId,
-        column,
-      });
+      const response = await linesService.cancelPurchase(token, purchaseIds);
 
       if (!response.ok) {
         throw new Error("Network response was not ok");

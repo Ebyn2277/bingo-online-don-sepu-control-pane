@@ -27,8 +27,9 @@ function App() {
     token
   );
 
-  const [selectedLine, setSelectedLine] = useState(null);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedPurchases, setSelectedPurchases] = useState([]);
+
+  const [isConfirmStateChange, setIsConfirmStateChange] = useState(false);
 
   const linesRef = useRef(null);
   const [screenshotURL, setScreenshotURL] = useState(null);
@@ -42,13 +43,18 @@ function App() {
 
   const captureLines = async () => {
     if (linesRef.current) {
+      const orignalPadding = linesRef.current.style.padding;
+
+      linesRef.current.style.padding = "16px";
+
       const canvas = await html2canvas(linesRef.current, {
         backgroundColor: "#222",
         scale: 2,
       });
 
-      const dataUrl = canvas.toDataURL("image/png");
+      linesRef.current.style.padding = orignalPadding;
 
+      const dataUrl = canvas.toDataURL("image/png");
       setScreenshotURL(dataUrl);
     }
   };
@@ -76,26 +82,20 @@ function App() {
   };
 
   const onClickChangeStateHandler = async (newState) => {
-    if (!selectedLine || !newState) return;
+    if (selectedPurchases.length === 0) return;
 
     let result;
     if (newState === "available") {
-      result = await cancelLinePurchase(
-        selectedLine.lineId,
-        selectedUser,
-        selectedLine.column
-      );
+      result = await cancelLinePurchase(selectedPurchases.map((s) => s.id));
     } else {
       result = await updateLineState(
-        selectedLine.lineId,
-        selectedUser,
-        selectedLine.column,
-        newState
+        selectedPurchases.map((s) => ({ id: s.id, state: newState }))
       );
     }
 
     if (result.success) {
-      setSelectedLine(null);
+      setSelectedPurchases([]);
+      setIsConfirmStateChange(false);
     } else {
       alert(
         `An error occurred while ${
@@ -111,6 +111,9 @@ function App() {
       alert("An error occurred while resetting lines.");
     }
   };
+
+  const checkInSelectedPurchases = (purchase) =>
+    selectedPurchases?.some((s) => s.id === purchase.id);
 
   return (
     <>
@@ -193,8 +196,9 @@ function App() {
             {totalLines &&
               Array.from({ length: totalLines }).map((_, i) => {
                 // Get all purchases for this line
-                const line = lines.filter((line) => line.line_id === i + 1);
-
+                const linePurchases = lines.filter(
+                  (line) => line.line_id === i + 1
+                );
                 return (
                   <li key={i}>
                     <span>{i + 1}.</span>
@@ -202,19 +206,35 @@ function App() {
                       {Array.from({
                         length: maxPurchasesPerLine,
                       }).map((_, j) => {
-                        if (j < line.length) {
+                        if (j < linePurchases.length) {
                           return (
-                            <li key={j} className={line[j].state}>
+                            <li
+                              key={j}
+                              className={`${linePurchases[j].state} ${
+                                checkInSelectedPurchases(linePurchases[j])
+                                  ? "selected"
+                                  : ""
+                              }`}
+                            >
                               <button
                                 onClick={() => {
-                                  setSelectedLine({
-                                    lineId: i + 1,
-                                    column: line[j].column,
-                                  });
-                                  setSelectedUser(line[j].user.id);
+                                  if (
+                                    checkInSelectedPurchases(linePurchases[j])
+                                  ) {
+                                    setSelectedPurchases((prev) =>
+                                      prev.filter(
+                                        (s) => s.id !== linePurchases[j].id
+                                      )
+                                    );
+                                  } else {
+                                    setSelectedPurchases((prev) => [
+                                      ...prev,
+                                      linePurchases[j],
+                                    ]);
+                                  }
                                 }}
                               >
-                                {line[j].user.name}
+                                {linePurchases[j].user.name}
                               </button>
                             </li>
                           );
@@ -246,16 +266,33 @@ function App() {
                 );
               })}
           </ul>
-          {selectedLine && (
+          {selectedPurchases.length > 0 && (
+            <div className="confirm-state-change-button-container">
+              <button
+                className="confirm-state-change-button"
+                onClick={() => setIsConfirmStateChange(true)}
+              >
+                Cambiar Estado
+              </button>
+            </div>
+          )}
+          {isConfirmStateChange && (
             <div className="change-state-modal">
-              <span className="close" onClick={() => setSelectedLine(null)}>
+              <span
+                className="close"
+                onClick={() => {
+                  setIsConfirmStateChange(false);
+                  setSelectedPurchases([]);
+                }}
+              >
                 &times;
               </span>
               <p>
-                Has seleccionado la línea {selectedLine.lineId} y al usuario{" "}
-                {lines.find((line) => line.line_id === selectedLine.lineId)
-                  ?.user?.name ?? "null"}
-                .
+                {selectedPurchases.length === 1
+                  ? `Has seleccionado la línea ${selectedPurchases[0].line_id} y al usuario ${selectedPurchases[0].user.name}`
+                  : `Has seleccionado los siguientes registros (linea, usuario): ${selectedPurchases.map(
+                      (s) => `(${s.line_id}, ${s.user.name})`
+                    )}`}
               </p>
               <ul>
                 <li>
@@ -288,8 +325,15 @@ function App() {
               </ul>
             </div>
           )}
-          <button onClick={onClickResetLinesHandler}>Reiniciar líneas</button>
-          <button onClick={onClickLogOutHandler}>Cerrar Sesion</button>
+          <button
+            className="lines-restart-button"
+            onClick={onClickResetLinesHandler}
+          >
+            Reiniciar líneas
+          </button>
+          <button className="logout-button" onClick={onClickLogOutHandler}>
+            Cerrar Sesion
+          </button>
         </section>
       ) : (
         <section className="login">

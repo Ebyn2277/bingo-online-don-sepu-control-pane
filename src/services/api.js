@@ -74,34 +74,20 @@ export const linesService = {
     });
   },
 
-  updateState: async (
-    token,
-    { lineId, userId, column, state, bingoId = BINGO_ID }
-  ) => {
+  updateState: async (token, purchases, bingoId = BINGO_ID) => {
     return apiFetch("lines/update", {
       method: "POST",
       headers: getAuthHeaders(token),
-      body: JSON.stringify({
-        line_id: lineId,
-        user_id: userId,
-        column,
-        bingo_id: bingoId,
-        state,
-      }),
+      body: JSON.stringify({ bingo_id: bingoId, purchases }),
     });
   },
 
-  cancelPurchase: async (
-    token,
-    { lineId, userId, column, bingoId = BINGO_ID }
-  ) => {
+  cancelPurchase: async (token, purchaseIds, bingoId = BINGO_ID) => {
     return apiFetch("lines", {
       method: "DELETE",
       headers: getAuthHeaders(token),
       body: JSON.stringify({
-        line_id: lineId,
-        user_id: userId,
-        column,
+        purchase_ids: purchaseIds,
         bingo_id: bingoId,
       }),
     });
