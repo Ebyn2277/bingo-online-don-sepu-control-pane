@@ -4,6 +4,7 @@ import "./App.css";
 import { useAuth } from "./hooks/useAuth";
 import { useBingoInfo } from "./hooks/useBingoInfo";
 import { useLines } from "./hooks/useLines";
+import { Login } from "./Login";
 
 function App() {
   const { isLoggedIn, login, logout, getToken } = useAuth();
@@ -61,17 +62,6 @@ function App() {
 
   const onClickDownloadScreenshotHandler = () => {
     setScreenshotURL(null);
-  };
-
-  const onSubmitHandler = async (event) => {
-    event.preventDefault();
-    const email = event.target.email.value;
-    const password = event.target.password.value;
-
-    const result = await login(email, password);
-    if (!result.success) {
-      alert("An error occurred during login.");
-    }
   };
 
   const onClickLogOutHandler = async () => {
@@ -336,16 +326,7 @@ function App() {
           </button>
         </section>
       ) : (
-        <section className="login">
-          <h1>Iniciar Sesión</h1>
-          <form className="login-form" onSubmit={onSubmitHandler}>
-            <label htmlFor="email">Correo:</label>
-            <input type="email" name="email" required />
-            <label htmlFor="password">Contraseña:</label>
-            <input type="password" name="password" required />
-            <button type="submit">Iniciar Sesión</button>
-          </form>
-        </section>
+        <Login login={login}></Login>
       )}
     </>
   );
