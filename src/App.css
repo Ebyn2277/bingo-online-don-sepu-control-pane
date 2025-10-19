@@ -212,33 +212,6 @@ h2 {
   }
 }
 
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: center;
-
-  label {
-    display: flex;
-    justify-content: space-between;
-    text-align: left;
-    gap: 0.5rem;
-    width: 200px;
-  }
-
-  input {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 1.2rem;
-  }
-
-  button {
-    padding: 0.5rem 1rem;
-    font-size: 1.2rem;
-    cursor: pointer;
-  }
-}
-
 .change-state-modal {
   position: fixed;
   bottom: 0;
