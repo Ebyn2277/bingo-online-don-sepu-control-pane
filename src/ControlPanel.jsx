@@ -3,6 +3,7 @@ import html2canvas from "html2canvas";
 import { useBingoInfo } from "./hooks/useBingoInfo";
 import { useLines } from "./hooks/useLines";
 import "./ControlPanel.css";
+import { BingoInfo } from "./BingoInfo.jsx";
 
 export function ControlPanel({ isLoggedIn, logout, getToken }) {
   const token = getToken();
@@ -106,54 +107,18 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
     <>
       <section className="control-panel">
         <h1>Panel de control</h1>
-        <div className="bingo-info">
-          <h2>Información del bingo</h2>
-          <form className="bingo-form">
-            <label>
-              Numero de lineas máximas por usuario:
-              <input
-                type="number"
-                value={maxLinesPerUser}
-                onChange={(e) => setMaxLinesPerUser(e.target.value)}
-              />
-            </label>
-            <label>
-              Cantidad de líneas:
-              <input
-                type="number"
-                value={maxPurchasesPerLine}
-                onChange={(e) => setMaxPurchasesPerLine(e.target.value)}
-              />
-            </label>
-            <label>
-              Precio por línea:
-              <input
-                type="number"
-                value={pricePerLine}
-                onChange={(e) => setPricePerLine(e.target.value)}
-              />
-            </label>
-            <label>
-              Líneas totales:
-              <input
-                type="number"
-                value={totalLines}
-                onChange={(e) => setTotalLines(e.target.value)}
-              />
-            </label>
-            <label>
-              Estado de la página:
-              <div className="checkbox-container">
-                <input
-                  type="checkbox"
-                  checked={active}
-                  onChange={(e) => setActive(e.target.checked)}
-                />{" "}
-                {active ? "Activa" : "Inactiva"}
-              </div>
-            </label>
-          </form>
-        </div>
+        <BingoInfo
+          maxLinesPerUser={maxLinesPerUser}
+          setMaxLinesPerUser={setMaxLinesPerUser}
+          maxPurchasesPerLine={maxPurchasesPerLine}
+          setMaxPurchasesPerLine={setMaxPurchasesPerLine}
+          pricePerLine={pricePerLine}
+          setPricePerLine={setPricePerLine}
+          totalLines={totalLines}
+          setTotalLines={setTotalLines}
+          active={active}
+          setActive={setActive}
+        ></BingoInfo>
         <ul className="lines-menu">
           <li>
             <button className="center-lines-button" onClick={scrollToLines}>
