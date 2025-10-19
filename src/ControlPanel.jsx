@@ -1,9 +1,9 @@
 import { useState, useRef } from "react";
-import html2canvas from "html2canvas";
 import { useBingoInfo } from "./hooks/useBingoInfo";
 import { useLines } from "./hooks/useLines";
 import "./ControlPanel.css";
 import { BingoInfo } from "./BingoInfo.jsx";
+import { LinesMenu } from "./LinesMenu.jsx";
 
 export function ControlPanel({ isLoggedIn, logout, getToken }) {
   const token = getToken();
@@ -31,36 +31,6 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
   const [isConfirmStateChange, setIsConfirmStateChange] = useState(false);
 
   const linesRef = useRef(null);
-  const [screenshotURL, setScreenshotURL] = useState(null);
-
-  const scrollToLines = () => {
-    linesRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
-
-  const captureLines = async () => {
-    if (linesRef.current) {
-      const orignalPadding = linesRef.current.style.padding;
-
-      linesRef.current.style.padding = "16px";
-
-      const canvas = await html2canvas(linesRef.current, {
-        backgroundColor: "#222",
-        scale: 2,
-      });
-
-      linesRef.current.style.padding = orignalPadding;
-
-      const dataUrl = canvas.toDataURL("image/png");
-      setScreenshotURL(dataUrl);
-    }
-  };
-
-  const onClickDownloadScreenshotHandler = () => {
-    setScreenshotURL(null);
-  };
 
   const onClickLogOutHandler = async () => {
     const result = await logout();
@@ -119,30 +89,7 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
           active={active}
           setActive={setActive}
         ></BingoInfo>
-        <ul className="lines-menu">
-          <li>
-            <button className="center-lines-button" onClick={scrollToLines}>
-              Centrar
-            </button>
-          </li>
-          <li>
-            <button className="take-screenshot-button" onClick={captureLines}>
-              Capturar pantalla
-            </button>
-          </li>
-          {screenshotURL && (
-            <li className="screenshot-container">
-              <a
-                href={screenshotURL}
-                download="element-screenshot.png"
-                onClick={onClickDownloadScreenshotHandler}
-              >
-                <h3>Descargar</h3>
-                <img src={screenshotURL} alt="Captured Element" />
-              </a>
-            </li>
-          )}
-        </ul>
+        <LinesMenu linesRef={linesRef}></LinesMenu>
         <ul className="lines" ref={linesRef}>
           {totalLines &&
             Array.from({ length: totalLines }).map((_, i) => {

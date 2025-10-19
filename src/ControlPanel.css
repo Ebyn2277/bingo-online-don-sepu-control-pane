@@ -10,45 +10,6 @@ h1 {
   margin-bottom: 1rem;
 }
 
-.lines-menu {
-  width: 100%;
-  display: flex;
-  justify-content: end;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-
-  list-style: none;
-
-  li {
-    flex-grow: 1;
-  }
-
-  button {
-    width: 100%;
-  }
-
-  img {
-    max-width: 100%;
-  }
-}
-
-.screenshot-container {
-  max-height: 80vh;
-
-  overflow: auto;
-
-  background-color: #222;
-  border: 2px solid #646cff;
-  border-radius: 8px;
-
-  h3 {
-    padding-block: 1rem;
-
-    letter-spacing: 1px;
-    text-decoration: underline;
-  }
-}
-
 .lines {
   width: 100%;
 
