@@ -87,15 +87,15 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
           active={active}
           setActive={setActive}
         ></BingoInfo>
-        <LinesMenu
+        <LinesMenu linesRef={linesRef}></LinesMenu>
+        <Lines
           lines={lines}
           linesRef={linesRef}
           totalLines={totalLines}
           maxPurchasesPerLine={maxPurchasesPerLine}
           selectedPurchases={selectedPurchases}
           setSelectedPurchases={setSelectedPurchases}
-        ></LinesMenu>
-        <Lines lines={lines} linesRef={linesRef}></Lines>
+        ></Lines>
         {selectedPurchases.length > 0 && (
           <div className="confirm-state-change-button-container">
             <button
