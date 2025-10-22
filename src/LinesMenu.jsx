@@ -4,11 +4,17 @@ import "./LinesMenu.css";
 
 export function LinesMenu({ linesRef }) {
   const [screenshotURL, setScreenshotURL] = useState(null);
+  const [isShrinked, setIsShrinked] = useState(false);
+
+  const onClickShrinkLines = () => {
+    setIsShrinked((prev) => !prev);
+    linesRef.current?.classList.toggle("shrinked");
+  };
 
   const scrollToLines = () => {
     linesRef.current?.scrollIntoView({
       behavior: "smooth",
-      block: "start",
+      block: "center",
     });
   };
 
@@ -38,11 +44,6 @@ export function LinesMenu({ linesRef }) {
     <>
       <ul className="lines-menu">
         <li>
-          <button className="center-lines-button" onClick={scrollToLines}>
-            Centrar
-          </button>
-        </li>
-        <li>
           <button className="take-screenshot-button" onClick={captureLines}>
             Capturar pantalla
           </button>
@@ -59,6 +60,16 @@ export function LinesMenu({ linesRef }) {
             </a>
           </li>
         )}
+        <li>
+          <button className="center-lines-button" onClick={scrollToLines}>
+            Centrar
+          </button>
+        </li>
+        <li>
+          <button onClick={onClickShrinkLines}>
+            {isShrinked ? "Restaurar tamaño" : "Reducir tamaño"}
+          </button>
+        </li>
       </ul>
     </>
   );

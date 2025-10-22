@@ -68,3 +68,31 @@
     border-radius: 8px;
   }
 }
+
+.shrinked {
+  height: 90vh;
+  padding: 0.4rem 0;
+  overflow: hidden;
+  justify-content: space-between;
+  gap: 0.2rem;
+
+  > li {
+    padding: 0;
+
+    > span {
+      font-size: 1.5rem;
+    }
+  }
+
+  button {
+    height: 100%;
+    padding: 0 0.2rem;
+  }
+
+  .users {
+    li {
+      height: 100%;
+      line-height: 1;
+    }
+  }
+}
