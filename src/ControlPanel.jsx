@@ -65,9 +65,17 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
   };
 
   const onClickResetLinesHandler = async () => {
+    const isResetConfirmed = window.confirm(
+      "Estás seguro de que quieres reiniciar las líneas?"
+    );
+
+    if (!isResetConfirmed) return;
+
     const result = await resetLines();
     if (!result.success) {
-      alert("An error occurred while resetting lines.");
+      alert("Un error ha ocurrido mientras se reiniciaban las líneas.");
+    } else {
+      alert("Las líneas han sido reseteadas correctamente.");
     }
   };
 
