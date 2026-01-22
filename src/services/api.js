@@ -44,24 +44,25 @@ export const authService = {
 
 export const bingoService = {
   getInfo: async (token) => {
-    return apiFetch("bingo/get/admin", {
+    return apiFetch("bingo/get/admin?bingo_id=" + BINGO_ID, {
       method: "GET",
       headers: getAuthHeaders(token),
     });
   },
 
-  updateInfo: async (token, bingoData) => {
+  updateInfo: async (token, bingoData, bingoId = BINGO_ID) => {
     return apiFetch("bingo/update", {
       method: "POST",
       headers: getAuthHeaders(token),
-      body: JSON.stringify(bingoData),
+      body: JSON.stringify({ bingo_id: bingoId, ...bingoData }),
     });
   },
 
-  reset: async (token) => {
+  reset: async (token, bingoId = BINGO_ID) => {
     return apiFetch("bingo/reset", {
       method: "POST",
       headers: getAuthHeaders(token),
+      body: JSON.stringify({ bingo_id: bingoId }),
     });
   },
 };
