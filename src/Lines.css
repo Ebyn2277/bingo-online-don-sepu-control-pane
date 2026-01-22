@@ -35,7 +35,7 @@
   gap: 0.4rem;
 
   li {
-    flex-basis: 6rem;
+    flex-basis: 25%;
     flex-shrink: 1;
     flex-grow: 1;
     font-size: 0.85rem;
@@ -70,28 +70,36 @@
 }
 
 .shrinked {
-  height: 90vh;
+  height: 92vh;
   padding: 0.4rem 0;
   overflow: hidden;
   justify-content: space-between;
-  gap: 0.2rem;
 
   > li {
-    padding: 0;
+    padding: 1px 0;
 
     > span {
       font-size: 1.5rem;
     }
   }
 
+  > :nth-child(2n) {
+    background-color: #666;
+  }
+
   button {
     height: 100%;
-    padding: 0 0.2rem;
+    padding: 0 0.1rem;
+
+    border-radius: 1px;
+    background-color: #444;
   }
 
   .users {
+    gap: 1px;
+
     li {
-      height: 100%;
+      height: auto;
       line-height: 1;
     }
   }
