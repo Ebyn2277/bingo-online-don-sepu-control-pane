@@ -63,6 +63,19 @@ h1 {
   z-index: 1000;
   border-radius: 1rem 1rem 0 0;
 
+  > div {
+    width: 100%;
+    max-width: 30rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    margin: 0 auto;
+    border-radius: 4px;
+
+    background-color: #222;
+  }
+
   span {
     position: absolute;
     top: 0;
@@ -71,10 +84,6 @@ h1 {
     padding: 1rem;
     font-size: 2rem;
     font-weight: bold;
-  }
-
-  p {
-    margin-top: 2rem;
   }
 
   ul {
@@ -135,6 +144,38 @@ h1 {
     cursor: pointer;
     font-weight: bold;
   }
+}
+
+.selected-purchases-list {
+  width: 100%;
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 1rem;
+  border-radius: 4px;
+  background-color: #000a;
+
+  list-style: none;
+
+  li.requested {
+    color: #f0ad4e;
+  }
+
+  li.purchased {
+    color: #5cb85c;
+  }
+}
+
+.mark-purchased-button {
+  background-color: #5cb85c;
+  color: white;
+}
+.mark-requested-button {
+  background-color: #f0ad4e;
+  color: #222;
+}
+.mark-available-button {
+  background-color: #d9534f;
+  color: white;
 }
 
 .lines-restart-button,

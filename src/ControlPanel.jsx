@@ -24,7 +24,7 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
 
   const { lines, updateLineState, cancelLinePurchase, resetLines } = useLines(
     isLoggedIn,
-    token
+    token,
   );
 
   const [selectedPurchases, setSelectedPurchases] = useState([]);
@@ -48,7 +48,7 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
       result = await cancelLinePurchase(selectedPurchases.map((s) => s.id));
     } else {
       result = await updateLineState(
-        selectedPurchases.map((s) => ({ id: s.id, state: newState }))
+        selectedPurchases.map((s) => ({ id: s.id, state: newState })),
       );
     }
 
@@ -59,14 +59,14 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
       alert(
         `An error occurred while ${
           newState === "available" ? "cancelling" : "updating"
-        } line.`
+        } line.`,
       );
     }
   };
 
   const onClickResetLinesHandler = async () => {
     const isResetConfirmed = window.confirm(
-      "Estás seguro de que quieres reiniciar las líneas?"
+      "Estás seguro de que quieres reiniciar las líneas?",
     );
 
     if (!isResetConfirmed) return;
@@ -110,7 +110,9 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
               className="confirm-state-change-button"
               onClick={() => setIsConfirmStateChange(true)}
             >
-              Cambiar Estado
+              Cambiar Estado ({selectedPurchases.length} compra
+              {selectedPurchases.length > 1 ? "s" : ""} seleccionada
+              {selectedPurchases.length > 1 ? "s" : ""})
             </button>
           </div>
         )}
@@ -125,39 +127,58 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
             >
               &times;
             </span>
-            <p>
-              {selectedPurchases.length === 1
-                ? `Has seleccionado la línea ${selectedPurchases[0].line_id} y al usuario ${selectedPurchases[0].user.name}`
-                : `Has seleccionado los siguientes registros (linea, usuario): ${selectedPurchases.map(
-                    (s) => `(${s.line_id}, ${s.user.name})`
-                  )}`}
-            </p>
+            <div>
+              <p>
+                {selectedPurchases.length === 1
+                  ? `Has seleccionado la línea ${selectedPurchases[0].line_id} y al usuario `
+                  : `Has seleccionado los siguientes registros (linea, usuario): `}
+              </p>
+              <div className="selected-purchases-list">
+                {selectedPurchases.map((s) => (
+                  <li key={s.id} className={s.state}>
+                    ({s.line_id}, {s.user.name})
+                  </li>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p>Total de compras seleccionadas:</p>
+              <p>{selectedPurchases.length}</p>
+            </div>
             <ul>
               <li>
                 <button
+                  className="mark-purchased-button"
                   onClick={() => {
                     onClickChangeStateHandler("purchased");
                   }}
                 >
-                  Marcar como pagada
+                  Marcar compra
+                  {selectedPurchases.length > 1 ? "s" : ""} como pagada
+                  {selectedPurchases.length > 1 ? "s" : ""}
                 </button>
               </li>
               <li>
                 <button
+                  className="mark-requested-button"
                   onClick={() => {
                     onClickChangeStateHandler("requested");
                   }}
                 >
-                  Marcar como reservada
+                  Marcar compra
+                  {selectedPurchases.length > 1 ? "s" : ""} como reservada
+                  {selectedPurchases.length > 1 ? "s" : ""}
                 </button>
               </li>
               <li>
                 <button
+                  className="mark-available-button"
                   onClick={() => {
                     onClickChangeStateHandler("available");
                   }}
                 >
                   Anular compra
+                  {selectedPurchases.length > 1 ? "s" : ""}
                 </button>
               </li>
             </ul>
