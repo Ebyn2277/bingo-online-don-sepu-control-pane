@@ -23,6 +23,7 @@ export function BingoInfo({
               type="number"
               value={maxLinesPerUser}
               onChange={(e) => setMaxLinesPerUser(e.target.value)}
+              min={0}
             />
           </label>
           <label>
@@ -31,6 +32,7 @@ export function BingoInfo({
               type="number"
               value={maxPurchasesPerLine}
               onChange={(e) => setMaxPurchasesPerLine(e.target.value)}
+              min={1}
             />
           </label>
           <label>
@@ -39,6 +41,7 @@ export function BingoInfo({
               type="number"
               value={pricePerLine}
               onChange={(e) => setPricePerLine(e.target.value)}
+              min={0}
             />
           </label>
           <label>
@@ -47,6 +50,7 @@ export function BingoInfo({
               type="number"
               value={totalLines}
               onChange={(e) => setTotalLines(e.target.value)}
+              min={1}
             />
           </label>
           <label>
