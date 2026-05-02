@@ -78,9 +78,8 @@
 }
 
 .shrinked {
-  height: auto;
+  height: 100%;
   padding: 0.4rem 0;
-  overflow: hidden;
   justify-content: space-between;
 
   > li {
