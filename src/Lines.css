@@ -103,11 +103,10 @@
 
   .users {
     min-height: 2.2rem;
-    gap: 1px;
+    gap: 0px;
 
     li {
-      height: auto;
-      line-height: 1;
+      font-size: 0.6rem;
     }
   }
 }
