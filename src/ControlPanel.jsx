@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useBingoInfo } from "./hooks/useBingoInfo";
 import { useLines } from "./hooks/useLines";
-import { useUsers } from "./hooks/useUsers"; // 1. Importamos el nuevo hook
+import { useUsers } from "./hooks/useUsers";
 import "./ControlPanel.css";
 import { BingoInfo } from "./BingoInfo.jsx";
 import { LinesMenu } from "./LinesMenu.jsx";
@@ -28,9 +28,9 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
     token,
   );
 
-  const [isTableVisible, setIsTableVisible] = useState(false); // Inicia oculto para ahorrar espacio
+  const [isTableVisible, setIsTableVisible] = useState(false);
+  const [selectIndividual, setSelectIndividual] = useState(false); // NUEVO ESTADO: Controla el modo de selección
 
-  // 2. Consumimos el hook de usuarios y creamos el estado del buscador
   const { users, loading, deleteUser } = useUsers(isLoggedIn, token);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -84,7 +84,6 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
     }
   };
 
-  // 3. Manejador para eliminar usuario con confirmación nativa
   const handleDeleteUserClick = async (userId, userName) => {
     const isConfirmed = window.confirm(
       `¿Estás completamente seguro de eliminar al usuario "${userName}"? Esto revocará todos sus tokens y liberará sus líneas.`,
@@ -99,7 +98,6 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
     }
   };
 
-  // 4. Filtrado en tiempo real por Nombre o Teléfono
   const filteredUsers = users.filter((user) => {
     const term = searchTerm.toLowerCase();
     const matchesName = user.name
@@ -126,8 +124,13 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
           setActive={setActive}
         ></BingoInfo>
 
-        <LinesMenu linesRef={linesRef}></LinesMenu>
+        <LinesMenu
+          linesRef={linesRef}
+          selectIndividual={selectIndividual}
+          setSelectIndividual={setSelectIndividual}
+        ></LinesMenu>
 
+        {/* PASAMOS selectIndividual COMO PROP */}
         <Lines
           lines={lines}
           linesRef={linesRef}
@@ -135,6 +138,7 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
           maxPurchasesPerLine={maxPurchasesPerLine}
           selectedPurchases={selectedPurchases}
           setSelectedPurchases={setSelectedPurchases}
+          selectIndividual={selectIndividual}
         ></Lines>
 
         {selectedPurchases.length > 0 && (
@@ -208,9 +212,6 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
           </div>
         )}
 
-        {/* ================================================================= */
-        /* NUEVA SECCIÓN: GESTIÓN DE USUARIOS (CON MUTADOR DE VISIBILIDAD)   */
-        /* ================================================================= */}
         <section className="users-management-section">
           <div className="users-management-header">
             <h2>Gestión de Usuarios</h2>
@@ -223,7 +224,6 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
             </button>
           </div>
 
-          {/* Si isTableVisible es true, se renderiza el buscador y la tabla */}
           {isTableVisible && (
             <>
               <div className="search-container">
@@ -284,6 +284,7 @@ export function ControlPanel({ isLoggedIn, logout, getToken }) {
             </>
           )}
         </section>
+
         <button
           className="lines-restart-button"
           onClick={onClickResetLinesHandler}

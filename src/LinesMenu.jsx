@@ -2,7 +2,7 @@ import { useState } from "react";
 import html2canvas from "html2canvas";
 import "./LinesMenu.css";
 
-export function LinesMenu({ linesRef }) {
+export function LinesMenu({ linesRef, selectIndividual, setSelectIndividual }) {
   const [screenshotURL, setScreenshotURL] = useState(null);
   const [isShrinked, setIsShrinked] = useState(false);
 
@@ -40,6 +40,11 @@ export function LinesMenu({ linesRef }) {
     setScreenshotURL(null);
   };
 
+  // NUEVO: Cambia el estado al hacer clic en la opción del menú
+  const onClickToggleSelectionMode = () => {
+    setSelectIndividual((prev) => !prev);
+  };
+
   return (
     <>
       <ul className="lines-menu">
@@ -68,6 +73,18 @@ export function LinesMenu({ linesRef }) {
         <li>
           <button onClick={onClickShrinkLines}>
             {isShrinked ? "Restaurar tamaño" : "Reducir tamaño"}
+          </button>
+        </li>
+        {/* NUEVA OPCIÓN DENTRO DEL MENÚ */}
+        <li>
+          <button
+            type="button"
+            onClick={onClickToggleSelectionMode}
+            className={selectIndividual ? "mode-individual-active" : ""}
+          >
+            {selectIndividual
+              ? "Seleccionar uno por uno"
+              : "Seleccionar todo el usuario"}
           </button>
         </li>
       </ul>

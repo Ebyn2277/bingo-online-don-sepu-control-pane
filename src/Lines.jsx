@@ -7,6 +7,7 @@ export function Lines({
   maxPurchasesPerLine,
   selectedPurchases,
   setSelectedPurchases,
+  selectIndividual, // RECIBIMOS LA PROP
 }) {
   const checkInSelectedPurchases = (purchase) =>
     selectedPurchases?.some((s) => s.id === purchase.id);
@@ -16,7 +17,6 @@ export function Lines({
       <ul className="lines" ref={linesRef}>
         {totalLines &&
           Array.from({ length: totalLines }).map((_, i) => {
-            // Obtener todas las compras de esta línea específica
             const linePurchases = lines.filter(
               (line) => line.line_id === i + 1,
             );
@@ -44,26 +44,44 @@ export function Lines({
                               const userId = currentPurchase.user.id;
 
                               if (isSelected) {
-                                // DESELECCIONAR: Quitamos de la lista global todas las compras que pertenezcan a este usuario
-                                setSelectedPurchases((prev) =>
-                                  prev.filter((s) => s.user.id !== userId),
-                                );
+                                if (selectIndividual) {
+                                  // UNO POR UNO: Deselecciona solo esta celda
+                                  setSelectedPurchases((prev) =>
+                                    prev.filter(
+                                      (s) => s.id !== currentPurchase.id,
+                                    ),
+                                  );
+                                } else {
+                                  // MASIVO: Deselecciona todo lo que sea de este usuario
+                                  setSelectedPurchases((prev) =>
+                                    prev.filter((s) => s.user.id !== userId),
+                                  );
+                                }
                               } else {
-                                // SELECCIONAR: Buscamos todas las líneas compradas por este usuario en el juego ('lines')
-                                const allUserPurchases = lines.filter(
-                                  (line) => line.user.id === userId,
-                                );
+                                if (selectIndividual) {
+                                  // UNO POR UNO: Agrega únicamente esta celda
+                                  setSelectedPurchases((prev) => [
+                                    ...prev,
+                                    currentPurchase,
+                                  ]);
+                                } else {
+                                  // MASIVO: Busca todas las compras de este usuario en el juego
+                                  const allUserPurchases = lines.filter(
+                                    (line) => line.user.id === userId,
+                                  );
 
-                                // Las agregamos al estado evitando duplicados
-                                setSelectedPurchases((prev) => {
-                                  const existingIds = new Set(
-                                    prev.map((p) => p.id),
-                                  );
-                                  const newPurchases = allUserPurchases.filter(
-                                    (p) => !existingIds.has(p.id),
-                                  );
-                                  return [...prev, ...newPurchases];
-                                });
+                                  // Las inserta en el estado omitiendo duplicados existentes
+                                  setSelectedPurchases((prev) => {
+                                    const existingIds = new Set(
+                                      prev.map((p) => p.id),
+                                    );
+                                    const newPurchases =
+                                      allUserPurchases.filter(
+                                        (p) => !existingIds.has(p.id),
+                                      );
+                                    return [...prev, ...newPurchases];
+                                  });
+                                }
                               }
                             }}
                           >

@@ -36,3 +36,9 @@
     text-decoration: underline;
   }
 }
+
+.lines-menu button.mode-individual-active {
+  background-color: #f0ad4e; /* Tono naranja de tus botones de advertencia/anulación */
+  color: #111;
+  font-weight: bold;
+}
