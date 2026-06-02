@@ -10,14 +10,15 @@ export function Lines({
 }) {
   const checkInSelectedPurchases = (purchase) =>
     selectedPurchases?.some((s) => s.id === purchase.id);
+
   return (
     <>
       <ul className="lines" ref={linesRef}>
         {totalLines &&
           Array.from({ length: totalLines }).map((_, i) => {
-            // Get all purchases for this line
+            // Obtener todas las compras de esta línea específica
             const linePurchases = lines.filter(
-              (line) => line.line_id === i + 1
+              (line) => line.line_id === i + 1,
             );
             return (
               <li key={i}>
@@ -27,54 +28,53 @@ export function Lines({
                     length: maxPurchasesPerLine,
                   }).map((_, j) => {
                     if (j < linePurchases.length) {
+                      const currentPurchase = linePurchases[j];
+                      const isSelected =
+                        checkInSelectedPurchases(currentPurchase);
+
                       return (
                         <li
                           key={j}
-                          className={`${linePurchases[j].state} ${
-                            checkInSelectedPurchases(linePurchases[j])
-                              ? "selected"
-                              : ""
+                          className={`${currentPurchase.state} ${
+                            isSelected ? "selected" : ""
                           }`}
                         >
                           <button
                             onClick={() => {
-                              if (checkInSelectedPurchases(linePurchases[j])) {
+                              const userId = currentPurchase.user.id;
+
+                              if (isSelected) {
+                                // DESELECCIONAR: Quitamos de la lista global todas las compras que pertenezcan a este usuario
                                 setSelectedPurchases((prev) =>
-                                  prev.filter(
-                                    (s) => s.id !== linePurchases[j].id
-                                  )
+                                  prev.filter((s) => s.user.id !== userId),
                                 );
                               } else {
-                                setSelectedPurchases((prev) => [
-                                  ...prev,
-                                  linePurchases[j],
-                                ]);
+                                // SELECCIONAR: Buscamos todas las líneas compradas por este usuario en el juego ('lines')
+                                const allUserPurchases = lines.filter(
+                                  (line) => line.user.id === userId,
+                                );
+
+                                // Las agregamos al estado evitando duplicados
+                                setSelectedPurchases((prev) => {
+                                  const existingIds = new Set(
+                                    prev.map((p) => p.id),
+                                  );
+                                  const newPurchases = allUserPurchases.filter(
+                                    (p) => !existingIds.has(p.id),
+                                  );
+                                  return [...prev, ...newPurchases];
+                                });
                               }
                             }}
                           >
-                            {linePurchases[j].user.name}
+                            {currentPurchase.user.name}
                           </button>
                         </li>
                       );
                     } else {
-                      /** TODO: Check if this else is neccesary */
                       return (
                         <li key={j} className="available">
-                          <button
-                          /**
-                                onClick={() => {
-                                  setSelectedLine({
-                                    lineId: i + 1,
-                                    column: line[j]?.column,
-                                  });
-                                  setSelectedUser(
-                                    line[j]?.user ? line[j].user.id : null
-                                  );
-                                }}
-                              */
-                          >
-                            Disponible
-                          </button>
+                          <button disabled>Disponible</button>
                         </li>
                       );
                     }
