@@ -36,7 +36,7 @@ export const authService = {
 
   logout: async (token) => {
     return apiFetch("admin/logout", {
-      method: "GET",
+      method: "POST",
       headers: getAuthHeaders(token),
     });
   },
@@ -90,6 +90,27 @@ export const linesService = {
       body: JSON.stringify({
         purchase_ids: purchaseIds,
         bingo_id: bingoId,
+      }),
+    });
+  },
+};
+
+export const usersService = {
+  // GET /api/users
+  getAll: async (token) => {
+    return apiFetch("users", {
+      method: "GET",
+      headers: getAuthHeaders(token),
+    });
+  },
+
+  // DELETE /api/users
+  delete: async (token, userId) => {
+    return apiFetch("users", {
+      method: "DELETE",
+      headers: getAuthHeaders(token),
+      body: JSON.stringify({
+        user_id: userId,
       }),
     });
   },
